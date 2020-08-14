@@ -18,7 +18,7 @@ public:
 private:
     int amount{0};
     void changeCoin(int coin);
-    void setBeverageStatus();
+    void setButtonStatus();
 
 private slots:
     void on_pb10_clicked();

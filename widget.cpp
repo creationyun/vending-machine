@@ -7,7 +7,7 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    setBeverageStatus();
+    setButtonStatus();
 }
 
 Widget::~Widget()
@@ -19,14 +19,15 @@ void Widget::changeCoin(int coin)
 {
     amount += coin;
     ui->lcdNumber->display(amount);
-    setBeverageStatus();
+    setButtonStatus();
 }
 
-void Widget::setBeverageStatus()
+void Widget::setButtonStatus()
 {
     ui->pbCoffee->setEnabled(amount >= 100);
     ui->pbTea->setEnabled(amount >= 150);
     ui->pbMilk->setEnabled(amount >= 200);
+    ui->pbReset->setEnabled(amount > 0);
 }
 
 void Widget::on_pb10_clicked()
@@ -67,6 +68,20 @@ void Widget::on_pbMilk_clicked()
 void Widget::on_pbReset_clicked()
 {
     QMessageBox m;
-    m.information(this, "Changes", QStringLiteral("Changes: %1").arg(amount));
+
+    int coins[4] = {500, 100, 50, 10};
+    int coin_count[4];
+    int num_coins = 4;
+    int remain = amount;
+    QString format = QString("Changes: %1\n\n500: %2\n100: %3\n50: %4\n10: %5").arg(amount);
+
+    for (int i = 0; i < num_coins; i++) {
+        coin_count[i] = remain / coins[i];
+        remain -= coin_count[i] * coins[i];
+
+        format = format.arg(coin_count[i]);
+    }
+
+    m.information(this, "Reset", format);
     changeCoin(-amount);
 }
