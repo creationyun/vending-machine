@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QMessageBox>
+#include <climits>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -17,6 +18,13 @@ Widget::~Widget()
 
 void Widget::changeCoin(int coin)
 {
+    QMessageBox m;
+
+    if (coin > 0 && amount > INT_MAX - coin) {
+        m.information(this, "Error", "Can't add coin.");
+        return;
+    }
+
     amount += coin;
     ui->lcdNumber->display(amount);
     setButtonStatus();
@@ -69,15 +77,15 @@ void Widget::on_pbReset_clicked()
 {
     QMessageBox m;
 
-    int coins[4] = {500, 100, 50, 10};
-    int coin_count[4];
-    int num_coins = 4;
+    int coins[] = {500, 100, 50, 10};
+    int num_coins = sizeof(coins) / sizeof(int);
+    int coin_count[num_coins];
     int remain = amount;
     QString format = QString("Changes: %1\n\n500: %2\n100: %3\n50: %4\n10: %5").arg(amount);
 
     for (int i = 0; i < num_coins; i++) {
         coin_count[i] = remain / coins[i];
-        remain -= coin_count[i] * coins[i];
+        remain %= coins[i];
 
         format = format.arg(coin_count[i]);
     }
